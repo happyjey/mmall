@@ -26,7 +26,18 @@
     from mmall_order_item
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    <select id="selectByUidOrderNo" resultMap="BaseResultMap" parameterType="map">
+      SELECT <include refid="Base_Column_List"></include>
+      FROM mmall_order_item
+      WHERE user_id = #{uid}
+      AND order_no = #{orderNo}
+    </select>
+    <select id="selectByOrderNo" resultMap="BaseResultMap" parameterType="long">
+      SELECT <include refid="Base_Column_List"></include>
+      FROM mmall_order_item
+      WHERE order_no = #{orderNo}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from mmall_order_item
     where id = #{id,jdbcType=INTEGER}
   </delete>
@@ -38,7 +49,7 @@
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{orderNo,jdbcType=BIGINT}, 
       #{productId,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, #{productImage,jdbcType=VARCHAR}, 
       #{currentUnitPrice,jdbcType=DECIMAL}, #{quantity,jdbcType=INTEGER}, #{totalPrice,jdbcType=DECIMAL}, 
-      now(), )
+      now(),now() )
   </insert>
   <insert id="insertSelective" parameterType="cc.mmall.pojo.OrderItem" >
     insert into mmall_order_item
@@ -163,4 +174,19 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <insert id="batchInsert" parameterType="list">
+    insert into mmall_order_item (id, user_id, order_no,
+      product_id, product_name, product_image,
+      current_unit_price, quantity, total_price,
+      create_time, update_time)
+    values
+    <foreach collection="orderItemList" index="index" item="v" separator=",">
+      (
+      #{v.id}, #{v.userId,jdbcType=INTEGER}, #{v.orderNo,jdbcType=BIGINT},
+      #{v.productId,jdbcType=INTEGER}, #{v.productName,jdbcType=VARCHAR}, #{v.productImage,jdbcType=VARCHAR},
+      #{v.currentUnitPrice,jdbcType=DECIMAL}, #{v.quantity,jdbcType=INTEGER}, #{v.totalPrice,jdbcType=DECIMAL},
+      now(),now()
+      )
+    </foreach>
+  </insert>
 </mapper>
